@@ -32,6 +32,9 @@ db.loadDatabase(function (err) {
             console.log("BITCOIN WALLET");
             console.log("Address:", hd.getAddress());
             console.log("TPRV:", hd.toBase58());
+            blockchain.addresses.unspents(hd.getAddress(), function(err, unspents) {
+                console.log(unspents)
+            });
         };
     });
 });
