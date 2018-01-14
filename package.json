@@ -19,10 +19,12 @@
   "homepage": "https://github.com/stefacc/bchain-permanent-storage#readme",
   "dependencies": {
     "assert": "^1.4.1",
-    "bigi": "^1.4.2",
+    "async": "^2.6.0",
+    "base64-img": "^1.0.3",
+    "binstring": "^0.2.1",
     "bitcoinjs-lib": "^3.3.2",
     "bitcoinjs-message": "^2.0.0",
-    "cb-blockr": "^3.1.2",
+    "blockchain.info": "^2.11.0",
     "nedb": "^1.8.0"
   }
 }
