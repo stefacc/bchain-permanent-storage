@@ -201,7 +201,6 @@ db.loadDatabase(function (err) {
 
             //moveAll(m3,m4,d4);
 
-            /*
             var data_from_op_return = "";
 
             async.waterfall([
@@ -219,6 +218,10 @@ db.loadDatabase(function (err) {
                 function(arg1, callback) {
                     data_from_op_return += arg1;
                     getTXs(m4.getAddress(), callback);
+                },
+                function(arg1, callback) {
+                    data_from_op_return += arg1;
+                    getTXs(m5.getAddress(), callback);
                 }
             ], function (err, result) {
                 if(!err){
@@ -229,7 +232,6 @@ db.loadDatabase(function (err) {
                     });
                 }
             });
-            */
 
         };
     });
