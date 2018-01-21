@@ -174,7 +174,6 @@ db.loadDatabase(function (err) {
             console.log(d4, d4.length);
             console.log(d5, d5.length);
 
-            /*
             async.waterfall([
                 function(callback) {
                     async.retry({times: 15, interval: 60000*2}, function(cb){ moveAll(hd, master, "", cb) }, function(err, result) {
@@ -214,42 +213,28 @@ db.loadDatabase(function (err) {
                 }
             ], function (err, result) {
                 console.log(err, result);
-            });*/
+            });
 
             //moveAll(m3,m4,d4);
 
             var data_from_op_return = "";
+            nextaddr = m1.getAddress();
 
-            async.waterfall([
-                function(callback) {
-                    getTXs(m1.getAddress(), callback);
-                },
-                function(arg1, arg2, callback) {
-                    data_from_op_return += arg1;
-                    getTXs(arg2, callback);
-                },
-                function(arg1, arg2, callback) {
-                    data_from_op_return += arg1;
-                    getTXs(arg2, callback);
-                },
-                function(arg1, arg2, callback) {
-                    data_from_op_return += arg1;
-                    getTXs(arg2, callback);
-                },
-                function(arg1, arg2, callback) {
-                    data_from_op_return += arg1;
-                    getTXs(arg2, callback);
-                },
-            ], function (err, result) {
-                if(!err){
-                    data_from_op_return += result;
-                    console.log(data_from_op_return);
-                    base64Img.img('data:image/bmp;base64,'+data_from_op_return, 'download', 'image', function(err, filepath) {
-
+            async.forever(
+                function(next) {
+                    getTXs(nextaddr, function(cb, arg1, arg2){
+                        data_from_op_return += arg1;
+                        if(arg2==null) next(true, arg1);
+                        nextaddr = arg2
+                        next();
                     });
+                },
+                function(err, arg1) {
+                    data_from_op_return += arg1;
+                    console.log(data_from_op_return);
+                    base64Img.img('data:image/bmp;base64,'+data_from_op_return, 'download', 'image', function(err, filepath) { });
                 }
-            });
-
+            );
         };
     });
 });
