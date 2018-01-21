@@ -93,16 +93,32 @@ function getTXs(address, cb){
     blockexplorer.getAddress(address)
     .then((data) => {
         if(data.txs.length>0){
-            if(data.txs.length>1)
+            if(data.txs.length>1){
+                nextHash = data.txs[0].hash;
                 hash = data.txs[1].hash;
-            else
+            }
+            else {
+                nextHash = null;
                 hash = data.txs[0].hash;
+            }
             blockexplorer.getTx(hash)
             .then((tx) => {
                 console.log("TX:", address, hash);
                 console.log("TX script:", tx.out[1].script.slice(4));
                 console.log("OP_RETURN:", conv(tx.out[1].script.slice(4), { in:'hex', out:'utf8' }));
-                return cb(null, conv(tx.out[1].script.slice(4), { in:'hex', out:'utf8' }));
+                
+                if(nextHash !== null)
+                    blockexplorer.getTx(nextHash)
+                    .then((nextTX) => {
+                        console.log("NEXT address:", nextTX.out[0].addr);
+                        nextAddr = nextTX.out[0].addr;
+                        return cb(null, conv(tx.out[1].script.slice(4), { in:'hex', out:'utf8' }), nextAddr);
+                    })
+                    .catch((err) => {
+                    throw err
+                    })
+                else
+                    return cb(null, conv(tx.out[1].script.slice(4), { in:'hex', out:'utf8' }), null);
             })
             .catch((err) => {
             throw err
@@ -158,6 +174,7 @@ db.loadDatabase(function (err) {
             console.log(d4, d4.length);
             console.log(d5, d5.length);
 
+            /*
             async.waterfall([
                 function(callback) {
                     async.retry({times: 15, interval: 60000*2}, function(cb){ moveAll(hd, master, "", cb) }, function(err, result) {
@@ -197,7 +214,7 @@ db.loadDatabase(function (err) {
                 }
             ], function (err, result) {
                 console.log(err, result);
-            });
+            });*/
 
             //moveAll(m3,m4,d4);
 
@@ -207,22 +224,22 @@ db.loadDatabase(function (err) {
                 function(callback) {
                     getTXs(m1.getAddress(), callback);
                 },
-                function(arg1, callback) {
+                function(arg1, arg2, callback) {
                     data_from_op_return += arg1;
-                    getTXs(m2.getAddress(), callback);
+                    getTXs(arg2, callback);
                 },
-                function(arg1, callback) {
+                function(arg1, arg2, callback) {
                     data_from_op_return += arg1;
-                    getTXs(m3.getAddress(), callback);
+                    getTXs(arg2, callback);
                 },
-                function(arg1, callback) {
+                function(arg1, arg2, callback) {
                     data_from_op_return += arg1;
-                    getTXs(m4.getAddress(), callback);
+                    getTXs(arg2, callback);
                 },
-                function(arg1, callback) {
+                function(arg1, arg2, callback) {
                     data_from_op_return += arg1;
-                    getTXs(m5.getAddress(), callback);
-                }
+                    getTXs(arg2, callback);
+                },
             ], function (err, result) {
                 if(!err){
                     data_from_op_return += result;
