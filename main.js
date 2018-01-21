@@ -224,13 +224,12 @@ db.loadDatabase(function (err) {
                 function(next) {
                     getTXs(nextaddr, function(cb, arg1, arg2){
                         data_from_op_return += arg1;
-                        if(arg2==null) next(true, arg1);
+                        if(arg2==null) next(true);
                         nextaddr = arg2
                         next();
                     });
                 },
                 function(err, arg1) {
-                    data_from_op_return += arg1;
                     console.log(data_from_op_return);
                     base64Img.img('data:image/bmp;base64,'+data_from_op_return, 'download', 'image', function(err, filepath) { });
                 }
